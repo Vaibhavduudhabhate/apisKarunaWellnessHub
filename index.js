@@ -10,7 +10,9 @@ import nodemailer from 'nodemailer';
 // import bcrypt from 'bcrypt';
 
 const jwt_secret = 'jsknkjfdkjshdkfjhs'
-
+// Access-Control-Allow-Origin: *
+// Access-Control-Allow-Methods: POST, GET, OPTIONS
+// Access-Control-Allow-Headers: Content-Type
 const app = express();
 app.use(cookieParser())
 app.use(express.json())
@@ -19,7 +21,12 @@ app.use(express.urlencoded({extended:false}));
 app.use(cors(
     {
         origin:['http://localhost:5173'],
-        credentials:true
+        credentials:true,
+        // credentials: true,
+    // Set the allowed HTTP methods
+    methods: ['POST', 'GET', 'OPTIONS'],
+    // Set the allowed headers
+    allowedHeaders: ['Content-Type']
     }
 ));
 
@@ -262,3 +269,4 @@ export default{
 app.listen(3002 ,()=>{
     console.log("server is running");
 })
+
