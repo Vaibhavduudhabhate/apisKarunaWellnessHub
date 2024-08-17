@@ -30,7 +30,7 @@
         if (status === 'verified') {
             alert("Password reset successful");
             if (confirm("Do you want to continue?")) {
-                window.location.href = "https://apiskarunawellnesshub.onrender.com/login";
+                window.location.href = "http://localhost:3000/login";
             }
         } else if (status === 'Not verified') {
             alert("Token verification failed or the link has expired.");
