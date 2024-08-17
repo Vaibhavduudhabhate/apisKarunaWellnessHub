@@ -20,7 +20,8 @@ app.set("view engine",'ejs')
 app.use(express.urlencoded({extended:false}));
 app.use(cors(
     {
-        origin:['http://localhost:3000'],
+        // origin:['http://localhost:3000'],
+        origin:'true',
         credentials:true,
         // credentials: true,
     // Set the allowed HTTP methods
