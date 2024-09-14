@@ -46,7 +46,7 @@ app.post('/forgotPassword',async(req,res)=>{
         }
         const secret = jwt_secret + olduser.password;
         const token = jwt.sign({email : olduser.email ,id:olduser._id},secret,{expiresIn : '5m'});
-        const link = `https://apiskarunawellnesshub.onrender.com/resetPassword/${olduser._id}/${token}`;
+        const link = `http://localhost:3002/resetPassword/${olduser._id}/${token}`;
         console.log('link',link)
         var transporter = nodemailer.createTransport({
             service: 'gmail',

@@ -7,33 +7,20 @@
 </head>
 <body>
     <h1><%= email   %></h1>
-    <form action="/resetPassword/<%= id %>/<%= token %>" method="post">
+    <form action="" method="post">
         <input type="password" name="password" id="password" placeholder="password"><br>
         <input type="password" name="confirm-password" id="confirm-password" placeholder="confirm-password"><br>
         <input type="submit" value="submit">
     </form>
 
     <script>
-        // var status = '<%= status %>';
-        // status =JSON.stringify(status)
-        // console.log('status',status)
-        // if(JSON.parse(status)=='verified'){
-        //     alert("password reset successfull")
-        //     if(confirm("Do you want to continue?")){
-        //         window.location.href = "https://apiskarunawellnesshub.onrender.com/login"
-        //     }
-        // }
-
         var status = '<%= status %>';
-        console.log('status:', status);
-
-        if (status === 'verified') {
-            alert("Password reset successful");
-            if (confirm("Do you want to continue?")) {
-                window.location.href = "http://localhost:3000/login";
+        status =JSON.stringify(status)
+        console.log('status',status)
+        if(JSON.parse(status)=='verified'){
+            if(confirm("Do you want to continue?")){
+                window.location.href = "https://apiskarunawellnesshub.onrender.com/login"
             }
-        } else if (status === 'Not verified') {
-            alert("Token verification failed or the link has expired.");
         }
     </script>
 </body>
