@@ -255,6 +255,19 @@ app.get('/allproducts',(req,res)=>{
         .catch(err => res.json(err));
 })
 
+app.get('/product/:id', (req, res) => {
+    const productId = req.params.id; // Get the product ID from the URL parameter
+    
+    productModel.findById(productId)
+        .then(product => {
+            if (product) {
+                res.json(product); // Return the product if found
+            } else {
+                res.status(404).json({ message: "Product not found" }); // Return 404 if not found
+            }
+        })
+        .catch(err => res.status(500).json({ error: "Error retrieving product", details: err }));
+});
 
 async function connectMongoDb(url){
     return mongoose.connect(url)
