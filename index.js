@@ -6,8 +6,8 @@ import cookieParser from "cookie-parser";
 import studentModel from "./model/studentModel.js"
 import productModel from "./model/productModel.js";
 import nodemailer from 'nodemailer';
-// import crypto, { verify } from 'crypto';
-// import bcrypt from 'bcrypt';
+import crypto, { verify } from 'crypto';
+import bcrypt from 'bcrypt';
 
 const jwt_secret = 'jsknkjfdkjshdkfjhs'
 // Access-Control-Allow-Origin: *
@@ -46,7 +46,7 @@ app.post('/forgotPassword',async(req,res)=>{
         }
         const secret = jwt_secret + olduser.password;
         const token = jwt.sign({email : olduser.email ,id:olduser._id},secret,{expiresIn : '5m'});
-        const link = `http://localhost:3002/resetPassword/${olduser._id}/${token}`;
+        const link = `https://apiskarunawellnesshub.onrender.com/resetPassword/${olduser._id}/${token}`;
         console.log('link',link)
         var transporter = nodemailer.createTransport({
             service: 'gmail',
@@ -77,24 +77,24 @@ app.post('/forgotPassword',async(req,res)=>{
     }
 })
 
-app.get("/resetPassword/:id/:token",async(req,res)=>{
-    const {id,token} = req.params;
-    // console.log(req.params);
-    const olduser = await studentModel.findOne({_id : id});
-        console.log(olduser)
-        if(!olduser){
-            return res.json({status:"user not exists"})
-        }
-        const secret = jwt_secret + olduser.password;
-        try {
-            const verify = jwt.verify(token,secret)
-            res.render('index',{email:verify.email,status:'Not verified'})
-            // res.send("verified")
-        } catch (error) {
-            console.log(error)
-            res.send('not Verified')
-        }
-})
+// app.get("/resetPassword/:id/:token",async(req,res)=>{
+//     const {id,token} = req.params;
+//     // console.log(req.params);
+//     const olduser = await studentModel.findOne({_id : id});
+//         console.log(olduser)
+//         if(!olduser){
+//             return res.json({status:"user not exists"})
+//         }
+//         const secret = jwt_secret + olduser.password;
+//         try {
+//             const verify = jwt.verify(token,secret)
+//             res.render('index',{email:verify.email,status:'Not verified'})
+//             // res.send("verified")
+//         } catch (error) {
+//             console.log(error)
+//             res.send('not Verified')
+//         }
+// })
 app.post("/resetPassword/:id/:token", async (req, res) => {
     const { id, token } = req.params;
     const { password } = req.body;
@@ -141,7 +141,10 @@ app.post("/resetPassword/:id/:token", async (req, res) => {
 //       }
   
 //       // Send email with password reset link
-//       const resetLink = `http://localhost:3002/reset-password/${resetToken}`;
+//     //   const resetLink = `http://localhost:3002/reset-password/${resetToken}`;
+//       const resetLink = `https://apiskarunawellnesshub.onrender.com/reset-password/${resetToken}`;
+
+//     //   https://apiskarunawellnesshub.onrender.com
 //       const mailOptions = {
 //         from: 'dudhabhatevaibhav@gmail.com',
 //         to: email,
@@ -191,13 +194,13 @@ app.post('/login',(req,res)=>{
         if(user){
             if(user.password === password){
                 const accessToken = jwt.sign({email : email},
-                    'jwt-access-token-secret-key',{expiresIn:'1m'});
+                    'jwt-access-token-secret-key',{expiresIn:'1d'});
                 const refreshToken = jwt.sign({email : email},
-                    'jwt-refresh-token-secret-key',{expiresIn:'5m'});    
+                    'jwt-refresh-token-secret-key',{expiresIn:'5d'});    
                 res.cookie('accessToken',accessToken ,{maxAge:60000});
                 res.cookie('refreshToken',refreshToken ,
                     {maxAge:30000,httpOnly:true,secure:true,sameSite:'strict'})
-                return res.json({Login : true})
+                return res.json({_id:user._id,name:user.name,email:user.email,Login : true,token:accessToken})
 
             }
         }else{
@@ -280,7 +283,7 @@ export default{
 
 
 
-app.listen(3002 ,()=>{
+app.listen(3001 ,()=>{
     console.log("server is running");
 })
 
