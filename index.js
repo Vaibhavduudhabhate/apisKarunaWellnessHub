@@ -273,40 +273,65 @@ app.post('/register', async (req, res) => {
             return res.status(409).json({ success: false, message: 'User already exists' });
         }
 
+        // Hash the password before saving
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         // Create a new user
-        const newUser = await studentModel.create({ name, email, password });
+        const newUser = await studentModel.create({
+            name,
+            email,
+            password: hashedPassword, // Save the hashed password
+        });
+
         return res.status(201).json({ success: true, message: 'User registered successfully' });
     } catch (err) {
         return res.status(500).json({ success: false, message: 'Server error', error: err.message });
     }
 });
 
+
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     try {
+        // Check if the user exists
         const user = await studentModel.findOne({ email });
         if (!user) {
-            return res.status(404).json({ status: "User not found" });
+            return res.status(404).json({ success: false, message: 'User not found' });
         }
 
+        // Compare the provided password with the stored hashed password
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
-            return res.status(401).json({ status: "Invalid credentials" });
+            return res.status(401).json({ success: false, message: 'Invalid credentials' });
         }
 
+        // Generate JWT tokens
         const accessToken = jwt.sign({ email }, 'jwt-access-token-secret-key', { expiresIn: '1d' });
         const refreshToken = jwt.sign({ email }, 'jwt-refresh-token-secret-key', { expiresIn: '5d' });
 
-        res.cookie('accessToken', accessToken, { maxAge: 60000, httpOnly: true, secure: true, sameSite: 'strict' });
-        res.cookie('refreshToken', refreshToken, { maxAge: 300000, httpOnly: true, secure: true, sameSite: 'strict' });
+        // Set cookies for tokens
+        res.cookie('accessToken', accessToken, { maxAge: 86400000, httpOnly: true, secure: true, sameSite: 'strict' });
+        res.cookie('refreshToken', refreshToken, { maxAge: 432000000, httpOnly: true, secure: true, sameSite: 'strict' });
 
-        res.json({ _id: user._id, name: user.name, email: user.email, login: true });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ status: "Internal server error" });
+        return res.json({ success: true, message: 'Login successful', user: { _id: user._id, name: user.name, email: user.email ,token:accessToken } });
+    } catch (err) {
+        return res.status(500).json({ success: false, message: 'Server error', error: err.message });
     }
 });
+
+async function hashExistingPasswords() {
+    const users = await studentModel.find({});
+    for (const user of users) {
+        if (!user.password.startsWith("$2b$")) { // Check if already hashed
+            const hashedPassword = await bcrypt.hash(user.password, 10);
+            await studentModel.updateOne({ _id: user._id }, { $set: { password: hashedPassword } });
+        }
+    }
+    console.log("Rehashed passwords for all users");
+}
+
+hashExistingPasswords();
 
 const verifyuser = (req,res,next) =>{
     const accessToken = req.cookies.accessToken;
