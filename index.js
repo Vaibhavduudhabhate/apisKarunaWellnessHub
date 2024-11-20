@@ -194,13 +194,13 @@ app.post('/login',(req,res)=>{
         if(user){
             if(user.password === password){
                 const accessToken = jwt.sign({email : email},
-                    'jwt-access-token-secret-key',{expiresIn:'1m'});
+                    'jwt-access-token-secret-key',{expiresIn:'1d'});
                 const refreshToken = jwt.sign({email : email},
-                    'jwt-refresh-token-secret-key',{expiresIn:'5m'});    
+                    'jwt-refresh-token-secret-key',{expiresIn:'5d'});    
                 res.cookie('accessToken',accessToken ,{maxAge:60000});
                 res.cookie('refreshToken',refreshToken ,
                     {maxAge:30000,httpOnly:true,secure:true,sameSite:'strict'})
-                return res.json({Login : true})
+                return res.json({_id:user._id,name:user.name,email:user.email,Login : true,token:accessToken})
 
             }
         }else{
