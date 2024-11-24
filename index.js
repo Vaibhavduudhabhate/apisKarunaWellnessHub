@@ -21,13 +21,9 @@ app.use(express.urlencoded({extended:false}));
 app.use(cors(
     {
         origin:"*",
-        
         credentials:true,
-        // credentials: true,
-    // Set the allowed HTTP methods
-    methods: ['POST', 'GET', 'OPTIONS'],
-    // Set the allowed headers
-    allowedHeaders: ['Content-Type']
+        methods: ['POST', 'GET', 'OPTIONS'],
+        allowedHeaders: ['Content-Type']
     }
 ));
 
@@ -132,7 +128,7 @@ const emailPass = 'uhmidniafrsfspqj'
 // });
 
 // 20/nov
-app.post("/resetPassword/:id/:token", async (req, res) => {
+app.get("/resetPassword/:id/:token", async (req, res) => {
     const { id, token } = req.params;
     const { password, confirmPassword } = req.body;
 
@@ -148,7 +144,7 @@ app.post("/resetPassword/:id/:token", async (req, res) => {
 
         const secret = jwt_secret + user.password;
 
-        jwt.verify(token, secret, async (err, decoded) => {
+        jwt.verify(token, secret, async (err) => {
             if (err) {
                 return res.status(401).json({ status: "Invalid or expired token" });
             }
@@ -167,18 +163,24 @@ app.post("/resetPassword/:id/:token", async (req, res) => {
     }
 });
 
+// 22nov
+
+// 22nov
+
+
 app.post('/forgotPassword', async (req, res) => {
     const { email } = req.body;
-    console.log(emailUser)
+    // console.log(emailUser)
     try {
         const user = await studentModel.findOne({ email });
         if (!user) {
             return res.status(404).json({ status: "User does not exist" });
         }
-
+        console.log(user)
         const secret = jwt_secret + user.password;
         const token = jwt.sign({ email: user.email, id: user._id }, secret, { expiresIn: '15m' });
-        const link = `https://apiskarunawellnesshub.onrender.com/resetPassword/${user._id}/${token}`;
+        // const link = `https://apiskarunawellnesshub.onrender.com/resetPassword/${user._id}/${token}`;
+        const link = `http://localhost:3001/resetPassword/${user._id}/${token}`;
         console.log("Link",link)
         const transporter = nodemailer.createTransport({
             service: 'gmail',

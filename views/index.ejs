@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -23,5 +23,25 @@
             }
         }
     </script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forgot Password</title>
+</head>
+<body>
+    <h1>Reset Password</h1>
+    <form action="/resetPassword/<%= id %>/<%= token %>" method="post">
+        <input type="password" name="password" id="password" placeholder="New Password" required><br>
+        <input type="password" name="confirmPassword" id="confirm-password" placeholder="Confirm Password" required><br>
+        <input type="submit" value="Submit">
+    </form>
+    <% if (status) { %>
+        <p><%= status %></p>
+    <% } %>
 </body>
 </html>
