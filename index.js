@@ -405,12 +405,14 @@ app.post('/add_to_cart/:userId',async(req,res)=>{
     let userId = req.params.userId;
   let user = await studentModel.exists({ _id: userId });
 
-  if (!userId || !isValidObjectId(userId) || !user)
-    return res.status(400).send({ status: false, message: "Invalid user ID" });
+  if (!userId || !isValidObjectId(userId) || !user){
+      return res.status(400).send({ status: false, message: "Invalid user ID" });
+  }
 
   let productId = req.body.productId;
-  if (!productId)
-    return res.status(400).send({ status: false, message: "Invalid product" });
+  if (!productId){
+      return res.status(400).send({ status: false, message: "Invalid product" });
+  }
 
   let cart = await cartModel.findOne({ userId: userId });
 
@@ -440,14 +442,16 @@ app.get('/get_cart/:userId',async(req,res)=>{
     let userId = req.params.userId;
   let user = await studentModel.exists({ _id: userId });
 
-  if (!userId || !isValidObjectId(userId) || !user)
-    return res.status(400).send({ status: false, message: "Invalid user ID" });
+  if (!userId || !isValidObjectId(userId) || !user){
+      return res.status(400).send({ status: false, message: "Invalid user ID" });
+  }
 
   let cart = await cartModel.findOne({ userId: userId });
-  if (!cart)
-    return res
-      .status(404)
-      .send({ status: false, message: "Cart not found for this user" });
+  if (!cart){
+      return res
+        .status(404)
+        .send({ status: false, message: "Cart not found for this user" });
+  }
 
   res.status(200).send({ status: true, cart: cart });
 })
@@ -458,14 +462,16 @@ app.patch('/decrease_quantity/:userId',async(req,res)=>{
   let user = await studentModel.exists({ _id: userId });
   let productId = req.body.productId;
 
-  if (!userId || !isValidObjectId(userId) || !user)
-    return res.status(400).send({ status: false, message: "Invalid user ID" });
+  if (!userId || !isValidObjectId(userId) || !user){
+      return res.status(400).send({ status: false, message: "Invalid user ID" });
+  }
 
   let cart = await cartModel.findOne({ userId: userId });
-  if (!cart)
-    return res
-      .status(404)
-      .send({ status: false, message: "Cart not found for this user" });
+  if (!cart){
+      return res
+        .status(404)
+        .send({ status: false, message: "Cart not found for this user" });
+  }
 
   let itemIndex = cart.products.findIndex((p) => p.productId == productId);
 
@@ -486,14 +492,16 @@ app.delete('/remove_item/:userId',async(req,res)=>{
   let user = await studentModel.exists({ _id: userId });
   let productId = req.body.productId;
 
-  if (!userId || !isValidObjectId(userId) || !user)
-    return res.status(400).send({ status: false, message: "Invalid user ID" });
+  if (!userId || !isValidObjectId(userId) || !user){
+      return res.status(400).send({ status: false, message: "Invalid user ID" });
+  }
 
   let cart = await cartModel.findOne({ userId: userId });
-  if (!cart)
-    return res
-      .status(404)
-      .send({ status: false, message: "Cart not found for this user" });
+  if (!cart){
+      return res
+        .status(404)
+        .send({ status: false, message: "Cart not found for this user" });
+  }
 
   let itemIndex = cart.products.findIndex((p) => p.productId == productId);
   if (itemIndex > -1) {
