@@ -18,12 +18,12 @@ const jwt_secret = 'jsknkjfdkjshdkfjhs'
 const app = express();
 app.use(cookieParser())
 app.use(express.json())
-app.set("view engine",'ejs')
-app.use(express.urlencoded({extended:false}));
+app.set("view engine", 'ejs')
+app.use(express.urlencoded({ extended: false }));
 app.use(cors(
     {
-        origin:"*",
-        credentials:true,
+        origin: "*",
+        credentials: true,
         methods: ['POST', 'GET', 'OPTIONS'],
         allowedHeaders: ['Content-Type']
     }
@@ -33,7 +33,7 @@ app.use(cors(
 // const emailUser = process.env.EMAIL_USER;
 // const emailPass = process.env.EMAIL_PASS;
 
-const emailUser ='dudhabhatevaibhav@gmail.com'
+const emailUser = 'dudhabhatevaibhav@gmail.com'
 const emailPass = 'uhmidniafrsfspqj'
 
 // 20/nov
@@ -57,7 +57,7 @@ const emailPass = 'uhmidniafrsfspqj'
 //               pass: 'uhmidniafrsfspqj'
 //             }
 //           });
-          
+
 //           var mailOptions = {
 //             from: emailUser,
 //             to:email,
@@ -65,7 +65,7 @@ const emailPass = 'uhmidniafrsfspqj'
 //             // text: `${link}`,
 //             html: `<p>Click this Link  <a href="${link}">here to forgot password </a> to visit the link.</p>`,
 //           };
-          
+
 //           transporter.sendMail(mailOptions, function(error, info){
 //             if (error) {
 //               console.log(error);
@@ -183,7 +183,7 @@ app.post('/forgotPassword', async (req, res) => {
         const token = jwt.sign({ email: user.email, id: user._id }, secret, { expiresIn: '15m' });
         // const link = `https://apiskarunawellnesshub.onrender.com/resetPassword/${user._id}/${token}`;
         const link = `http://localhost:3001/resetPassword/${user._id}/${token}`;
-        console.log("Link",link)
+        console.log("Link", link)
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -212,10 +212,10 @@ app.post('/forgotPassword', async (req, res) => {
 
 //   app.post('/forgot-password', (req, res) => {
 //     const { email } = req.body;
-  
+
 //     // Generate a unique reset token
 //     const resetToken = crypto.randomBytes(20).toString('hex');
-    
+
 //     // Save the token to the user's document in the database
 //     studentModel.findOneAndUpdate(
 //       { email },
@@ -225,7 +225,7 @@ app.post('/forgotPassword', async (req, res) => {
 //       if (!user) {
 //         return res.status(404).json({ message: 'User not found' });
 //       }
-  
+
 //       // Send email with password reset link
 //     //   const resetLink = `http://localhost:3002/reset-password/${resetToken}`;
 //       const resetLink = `https://apiskarunawellnesshub.onrender.com/reset-password/${resetToken}`;
@@ -237,7 +237,7 @@ app.post('/forgotPassword', async (req, res) => {
 //         subject: 'Password Reset Link',
 //         text: `Click on this link to reset your password: ${resetLink}`
 //       };
-  
+
 //       transporter.sendMail(mailOptions, (error, info) => {
 //         if (error) {
 //           console.log(error);
@@ -248,12 +248,12 @@ app.post('/forgotPassword', async (req, res) => {
 //       });
 //     }).catch(err => res.status(500).json(err));
 //   });
-  
+
 
 //   app.post('/reset-password/:token', (req, res) => {
 //     const { token } = req.params;
 //     const { newPassword } = req.body;
-  
+
 //     studentModel.findOneAndUpdate(
 //       { resetToken: token, resetTokenExpiry: { $gt: Date.now() } },
 //       { password: newPassword, resetToken: null, resetTokenExpiry: null },
@@ -311,14 +311,14 @@ app.post('/login', async (req, res) => {
         }
 
         // Generate JWT tokens
-        const accessToken = jwt.sign({ email }, 'jwt-access-token-secret-key', { expiresIn: '1d' });
-        const refreshToken = jwt.sign({ email }, 'jwt-refresh-token-secret-key', { expiresIn: '5d' });
+        const accessToken = jwt.sign({ email, userId: user._id }, 'jwt-access-token-secret-key', { expiresIn: '1d' });
+        const refreshToken = jwt.sign({ email, userId: user._id }, 'jwt-refresh-token-secret-key', { expiresIn: '5d' });
 
         // Set cookies for tokens
         res.cookie('accessToken', accessToken, { maxAge: 86400000, httpOnly: true, secure: true, sameSite: 'strict' });
         res.cookie('refreshToken', refreshToken, { maxAge: 432000000, httpOnly: true, secure: true, sameSite: 'strict' });
 
-        return res.json({ success: true, message: 'Login successful', user: { _id: user._id, name: user.name, email: user.email ,token:accessToken } });
+        return res.json({ success: true, message: 'Login successful', user: { _id: user._id, name: user.name, email: user.email, token: accessToken } });
     } catch (err) {
         return res.status(500).json({ success: false, message: 'Server error', error: err.message });
     }
@@ -337,17 +337,17 @@ async function hashExistingPasswords() {
 
 hashExistingPasswords();
 
-const verifyuser = (req,res,next) =>{
+const verifyuser = (req, res, next) => {
     const accessToken = req.cookies.accessToken;
-    if(!accessToken){
-        if(renewToken(req,res)){
+    if (!accessToken) {
+        if (renewToken(req, res)) {
             next()
         }
-    }else{
-        jwt.verify(accessToken,'jwt-access-token-secret-key',(err,decoded)=>{
-            if(err){
-                return res.json({valid:false,message:'Invalid Token'})
-            }else{
+    } else {
+        jwt.verify(accessToken, 'jwt-access-token-secret-key', (err, decoded) => {
+            if (err) {
+                return res.json({ valid: false, message: 'Invalid Token' })
+            } else {
                 req.email = decoded.email
                 next()
             }
@@ -355,31 +355,31 @@ const verifyuser = (req,res,next) =>{
     }
 }
 
-const renewToken = (req,res) =>{
+const renewToken = (req, res) => {
     const refreshToken = req.cookies.refreshToken;
     let exit = false
-    if(!refreshToken){
-        return res.json({valid:false,message:"no refresh token"})
-    }else{
-        jwt.verify(refreshToken,'jwt-refresh-token-secret-key',(err,decoded)=>{
-            if(err){
-                return res.json({valid:false,message:'Invalid refresh Token'})
-            }else{
-                const accessToken = jwt.sign({email : decoded.email},
-                    'jwt-access-token-secret-key',{expiresIn:'1m'});
-                res.cookie('accessToken',accessToken ,{maxAge:60000});
-                    exit = true;
+    if (!refreshToken) {
+        return res.json({ valid: false, message: "no refresh token" })
+    } else {
+        jwt.verify(refreshToken, 'jwt-refresh-token-secret-key', (err, decoded) => {
+            if (err) {
+                return res.json({ valid: false, message: 'Invalid refresh Token' })
+            } else {
+                const accessToken = jwt.sign({ email: decoded.email },
+                    'jwt-access-token-secret-key', { expiresIn: '1m' });
+                res.cookie('accessToken', accessToken, { maxAge: 60000 });
+                exit = true;
             }
         })
     }
     return exit;
 }
 
-app.get('/dashboard',verifyuser,(req,res)=>{
-    return res.json({valid:true,message:"authorized"})
+app.get('/dashboard', verifyuser, (req, res) => {
+    return res.json({ valid: true, message: "authorized" })
 })
 
-app.get('/allproducts',(req,res)=>{
+app.get('/allproducts', (req, res) => {
     productModel.find({})
         .then(products => res.json(products))
         .catch(err => res.json(err));
@@ -387,7 +387,7 @@ app.get('/allproducts',(req,res)=>{
 
 app.get('/product/:id', (req, res) => {
     const productId = req.params.id; // Get the product ID from the URL parameter
-    
+
     productModel.findById(productId)
         .then(product => {
             if (product) {
@@ -400,135 +400,349 @@ app.get('/product/:id', (req, res) => {
 });
 
 // Add to cart logic start here
+// with token logic
+app.post('/add_to_cart', async (req, res) => {
+    try {
+        // Extract the token from the Authorization header
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ success: false, message: 'Authorization token is required' });
+        }
 
-app.post('/add_to_cart/:userId',async(req,res)=>{
-    let userId = req.params.userId;
-  let user = await studentModel.exists({ _id: userId });
+        const token = authHeader.split(' ')[1]; // Get the token part after "Bearer"
 
-  if (!userId || !isValidObjectId(userId) || !user){
-      return res.status(400).send({ status: false, message: "Invalid user ID" });
-  }
+        // Verify the token and extract the userId
+        const decoded = jwt.verify(token, 'jwt-access-token-secret-key');
+        const userId = decoded.userId;
 
-  let productId = req.body.productId;
-  if (!productId){
-      return res.status(400).send({ status: false, message: "Invalid product" });
-  }
+        // Validate the user
+        const user = await studentModel.exists({ _id: userId });
+        if (!user) {
+            return res.status(400).json({ success: false, message: 'Invalid user ID' });
+        }
 
-  let cart = await cartModel.findOne({ userId: userId });
+        // Validate the product
+        const productId = req.body.productId;
+        if (!productId) {
+            return res.status(400).json({ success: false, message: 'Invalid product' });
+        }
 
-  if (cart) {
-    let itemIndex = cart.products.findIndex((p) => p.productId == productId);
+        const product = await productModel.findById(productId);
+        if (!product) {
+            return res.status(404).json({ success: false, message: 'Product not found' });
+        }
 
-    if (itemIndex > -1) {
-      let productItem = cart.products[itemIndex];
-      productItem.quantity += 1;
-      cart.products[itemIndex] = productItem;
-    } else {
-      cart.products.push({ productId: productId, quantity: 1 });
+        // Check for existing cart and update or create it
+        let cart = await cartModel.findOne({ userId });
+
+        if (cart) {
+            let itemIndex = cart.products.findIndex((p) => p.productId == productId);
+
+            if (itemIndex > -1) {
+                let productItem = cart.products[itemIndex];
+                productItem.quantity += 1;
+                cart.products[itemIndex] = productItem;
+            } else {
+                cart.products.push({ productId, quantity: 1 });
+            }
+            cart = await cart.save();
+            // Fetch all products in the cart with details
+            const cartWithProductDetails = await Promise.all(
+                cart.products.map(async (item) => {
+                    const productDetails = await productModel.findById(item.productId);
+                    return { ...item._doc, productDetails };
+                })
+            );
+
+            return res.status(200).json({
+                success: true,
+                message: 'Cart updated successfully',
+                updatedCart: { ...cart._doc, products: cartWithProductDetails }
+            });
+        } else {
+            const newCart = await cartModel.create({
+                userId,
+                products: [{ productId, quantity: 1 }],
+            });
+
+            const productDetails = await productModel.findById(productId);
+
+            return res.status(201).json({
+                success: true,
+                message: 'Cart created successfully',
+                newCart: {
+                    ...newCart._doc,
+                    products: [{ ...newCart.products[0]._doc, productDetails }]
+                }
+            });
+        }
+    } catch (err) {
+        if (err.name === 'JsonWebTokenError') {
+            return res.status(401).json({ success: false, message: 'Invalid token' });
+        }
+        return res.status(500).json({ success: false, message: 'Server error', error: err.message });
     }
-    cart = await cart.save();
-    return res.status(200).send({ status: true, updatedCart: cart });
-  } else {
-    const newCart = await cartModel.create({
-      userId,
-      products: [{ productId: productId, quantity: 1 }],
-    });
+});
 
-    return res.status(201).send({ status: true, newCart: newCart });
-  }
+app.get('/get_cart', async (req, res) => {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ success: false, message: 'Authorization token is required' });
+        }
+
+        const token = authHeader.split(' ')[1]; // Get the token part after "Bearer"
+
+        // Verify the token and extract the userId
+        const decoded = jwt.verify(token, 'jwt-access-token-secret-key');
+        const userId = decoded.userId;
+
+        // Validate the user
+        const user = await studentModel.exists({ _id: userId });
+
+        if (!userId || !isValidObjectId(userId) || !user) {
+            return res.status(400).send({ status: false, message: "Invalid user ID" });
+        }
+
+        let cart = await cartModel.findOne({ userId: userId });
+        if (!cart) {
+            return res
+                .status(404)
+                .send({ status: false, message: "Cart not found for this user" });
+        }
+
+        res.status(200).send({ status: true, cart: cart });
+    } catch (err) {
+        if (err.name === 'JsonWebTokenError') {
+            return res.status(401).json({ success: false, message: 'Invalid token' });
+        }
+        return res.status(500).json({ success: false, message: 'Server error', error: err.message });
+    }
 })
 
-app.get('/get_cart/:userId',async(req,res)=>{
-    let userId = req.params.userId;
-  let user = await studentModel.exists({ _id: userId });
+app.patch("/decrease_quantity", async (req, res) => {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ success: false, message: 'Authorization token is required' });
+        }
 
-  if (!userId || !isValidObjectId(userId) || !user){
-      return res.status(400).send({ status: false, message: "Invalid user ID" });
-  }
+        const token = authHeader.split(' ')[1]; // Get the token part after "Bearer"
 
-  let cart = await cartModel.findOne({ userId: userId });
-  if (!cart){
-      return res
-        .status(404)
-        .send({ status: false, message: "Cart not found for this user" });
-  }
+        // Verify the token and extract the userId
+        const decoded = jwt.verify(token, 'jwt-access-token-secret-key');
+        const userId = decoded.userId;
 
-  res.status(200).send({ status: true, cart: cart });
+        let user = await studentModel.exists({ _id: userId });
+        let productId = req.body.productId;
+
+        if (!userId || !isValidObjectId(userId) || !user) {
+            return res.status(400).send({ status: false, message: "Invalid user ID" });
+        }
+
+        let cart = await cartModel.findOne({ userId: userId });
+        if (!cart) {
+            return res
+                .status(404)
+                .send({ status: false, message: "Cart not found for this user" });
+        }
+
+        let itemIndex = cart.products.findIndex((p) => p.productId == productId);
+
+        if (itemIndex > -1) {
+            let productItem = cart.products[itemIndex];
+            productItem.quantity -= 1;
+            cart.products[itemIndex] = productItem;
+            cart = await cart.save();
+            return res.status(200).send({ status: true, updatedCart: cart });
+        }
+        res
+            .status(400)
+            .send({ status: false, message: "Item does not exist in cart" });
+    } catch (err) {
+        if (err.name === 'JsonWebTokenError') {
+            return res.status(401).json({ success: false, message: 'Invalid token' });
+        }
+        return res.status(500).json({ success: false, message: 'Server error', error: err.message });
+    }
 })
 
-app.patch('/decrease_quantity/:userId',async(req,res)=>{
-     // use add product endpoint for increase quantity
-  let userId = req.params.userId;
-  let user = await studentModel.exists({ _id: userId });
-  let productId = req.body.productId;
+app.delete('/remove_item', async (req, res) => {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ success: false, message: 'Authorization token is required' });
+        }
 
-  if (!userId || !isValidObjectId(userId) || !user){
-      return res.status(400).send({ status: false, message: "Invalid user ID" });
-  }
+        const token = authHeader.split(' ')[1]; // Get the token part after "Bearer"
 
-  let cart = await cartModel.findOne({ userId: userId });
-  if (!cart){
-      return res
-        .status(404)
-        .send({ status: false, message: "Cart not found for this user" });
-  }
+        // Verify the token and extract the userId
+        const decoded = jwt.verify(token, 'jwt-access-token-secret-key');
+        const userId = decoded.userId;
+        let user = await studentModel.exists({ _id: userId });
+        let productId = req.body.productId;
 
-  let itemIndex = cart.products.findIndex((p) => p.productId == productId);
+        if (!userId || !isValidObjectId(userId) || !user) {
+            return res.status(400).send({ status: false, message: "Invalid user ID" });
+        }
 
-  if (itemIndex > -1) {
-    let productItem = cart.products[itemIndex];
-    productItem.quantity -= 1;
-    cart.products[itemIndex] = productItem;
-    cart = await cart.save();
-    return res.status(200).send({ status: true, updatedCart: cart });
-  }
-  res
-    .status(400)
-    .send({ status: false, message: "Item does not exist in cart" });
+        let cart = await cartModel.findOne({ userId: userId });
+        if (!cart) {
+            return res
+                .status(404)
+                .send({ status: false, message: "Cart not found for this user" });
+        }
+
+        let itemIndex = cart.products.findIndex((p) => p.productId == productId);
+        if (itemIndex > -1) {
+            cart.products.splice(itemIndex, 1);
+            cart = await cart.save();
+            return res.status(200).send({ status: true, updatedCart: cart });
+        }
+        res
+            .status(400)
+            .send({ status: false, message: "Item does not exist in cart" });
+    } catch (err) {
+        if (err.name === 'JsonWebTokenError') {
+            return res.status(401).json({ success: false, message: 'Invalid token' });
+        }
+        return res.status(500).json({ success: false, message: 'Server error', error: err.message });
+    }
 })
+// with token logic
 
-app.delete('/remove_item/:userId',async(req,res)=>{
-    let userId = req.params.userId;
-  let user = await studentModel.exists({ _id: userId });
-  let productId = req.body.productId;
+// without token logic
+// app.post('/add_to_cart/:userId',async(req,res)=>{
+//     let token = req.body.token
+//     console.log(req.body)
+//     let userId = req.params.userId;
+//   let user = await studentModel.exists({ _id: userId });
 
-  if (!userId || !isValidObjectId(userId) || !user){
-      return res.status(400).send({ status: false, message: "Invalid user ID" });
-  }
+//   if (!userId || !isValidObjectId(userId) || !user){
+//       return res.status(400).send({ status: false, message: "Invalid user ID" });
+//   }
 
-  let cart = await cartModel.findOne({ userId: userId });
-  if (!cart){
-      return res
-        .status(404)
-        .send({ status: false, message: "Cart not found for this user" });
-  }
+//   let productId = req.body.productId;
+//   if (!productId){
+//       return res.status(400).send({ status: false, message: "Invalid product" });
+//   }
 
-  let itemIndex = cart.products.findIndex((p) => p.productId == productId);
-  if (itemIndex > -1) {
-    cart.products.splice(itemIndex, 1);
-    cart = await cart.save();
-    return res.status(200).send({ status: true, updatedCart: cart });
-  }
-  res
-    .status(400)
-    .send({ status: false, message: "Item does not exist in cart" });
-})
+//   let cart = await cartModel.findOne({ userId: userId });
+
+//   if (cart) {
+//     let itemIndex = cart.products.findIndex((p) => p.productId == productId);
+
+//     if (itemIndex > -1) {
+//       let productItem = cart.products[itemIndex];
+//       productItem.quantity += 1;
+//       cart.products[itemIndex] = productItem;
+//     } else {
+//       cart.products.push({ productId: productId, quantity: 1 });
+//     }
+//     cart = await cart.save();
+//     return res.status(200).send({ status: true, updatedCart: cart });
+//   } else {
+//     const newCart = await cartModel.create({
+//       userId,
+//       products: [{ productId: productId, quantity: 1 }],
+//     });
+
+//     return res.status(201).send({ status: true, newCart: newCart });
+//   }
+// })
+// app.get('/get_cart/:userId',async(req,res)=>{
+//     let userId = req.params.userId;
+//   let user = await studentModel.exists({ _id: userId });
+
+//   if (!userId || !isValidObjectId(userId) || !user){
+//       return res.status(400).send({ status: false, message: "Invalid user ID" });
+//   }
+
+//   let cart = await cartModel.findOne({ userId: userId });
+//   if (!cart){
+//       return res
+//         .status(404)
+//         .send({ status: false, message: "Cart not found for this user" });
+//   }
+
+//   res.status(200).send({ status: true, cart: cart });
+// })
+// app.patch('/decrease_quantity/:userId', async (req, res) => {
+//     // use add product endpoint for increase quantity
+//     let userId = req.params.userId;
+//     let user = await studentModel.exists({ _id: userId });
+//     let productId = req.body.productId;
+
+//     if (!userId || !isValidObjectId(userId) || !user) {
+//         return res.status(400).send({ status: false, message: "Invalid user ID" });
+//     }
+
+//     let cart = await cartModel.findOne({ userId: userId });
+//     if (!cart) {
+//         return res
+//             .status(404)
+//             .send({ status: false, message: "Cart not found for this user" });
+//     }
+
+//     let itemIndex = cart.products.findIndex((p) => p.productId == productId);
+
+//     if (itemIndex > -1) {
+//         let productItem = cart.products[itemIndex];
+//         productItem.quantity -= 1;
+//         cart.products[itemIndex] = productItem;
+//         cart = await cart.save();
+//         return res.status(200).send({ status: true, updatedCart: cart });
+//     }
+//     res
+//         .status(400)
+//         .send({ status: false, message: "Item does not exist in cart" });
+// })
+// without token logic
+
+
+
+// app.delete('/remove_item/:userId', async (req, res) => {
+//     let userId = req.params.userId;
+//     let user = await studentModel.exists({ _id: userId });
+//     let productId = req.body.productId;
+
+//     if (!userId || !isValidObjectId(userId) || !user) {
+//         return res.status(400).send({ status: false, message: "Invalid user ID" });
+//     }
+
+//     let cart = await cartModel.findOne({ userId: userId });
+//     if (!cart) {
+//         return res
+//             .status(404)
+//             .send({ status: false, message: "Cart not found for this user" });
+//     }
+
+//     let itemIndex = cart.products.findIndex((p) => p.productId == productId);
+//     if (itemIndex > -1) {
+//         cart.products.splice(itemIndex, 1);
+//         cart = await cart.save();
+//         return res.status(200).send({ status: true, updatedCart: cart });
+//     }
+//     res
+//         .status(400)
+//         .send({ status: false, message: "Item does not exist in cart" });
+// })
 
 // Add to cart logic end here
 
 
-async function connectMongoDb(url){
-    return mongoose.connect(url)
-}
-connectMongoDb('mongodb+srv://admin:admin1234@cluster0.w3huoar.mongodb.net/practiceDatabase').then(()=>console.log("mongodb connected"))
+async function connectMongoDb(url) {
+        return mongoose.connect(url)
+    }
+connectMongoDb('mongodb+srv://admin:admin1234@cluster0.w3huoar.mongodb.net/practiceDatabase').then(() => console.log("mongodb connected"))
 
-export default{
+export default {
     connectMongoDb,
 }
 
 
 
-app.listen(3001 ,()=>{
+app.listen(3001, () => {
     console.log("server is running");
 })
 
