@@ -454,10 +454,13 @@ app.post('/add_to_cart', async (req, res) => {
                 })
             );
 
+            const total = cartWithProductDetails.length
+            console.log(total)
+
             return res.status(200).json({
                 success: true,
                 message: 'Cart updated successfully',
-                updatedCart: { ...cart._doc, products: cartWithProductDetails }
+                updatedCart: { ...cart._doc, products: cartWithProductDetails ,total:total }
             });
         } else {
             const newCart = await cartModel.create({
@@ -505,13 +508,15 @@ app.get('/get_cart', async (req, res) => {
         }
 
         let cart = await cartModel.findOne({ userId: userId });
+        let total = cart.products.length
+        console.log(total)
         if (!cart) {
             return res
                 .status(404)
                 .send({ status: false, message: "Cart not found for this user" });
         }
 
-        res.status(200).send({ status: true, cart: cart });
+        res.status(200).send({ status: true, cart: { ...cart._doc, total } });
     } catch (err) {
         if (err.name === 'JsonWebTokenError') {
             return res.status(401).json({ success: false, message: 'Invalid token' });
@@ -541,6 +546,7 @@ app.patch("/decrease_quantity", async (req, res) => {
         }
 
         let cart = await cartModel.findOne({ userId: userId });
+        let total = cart.products.length
         if (!cart) {
             return res
                 .status(404)
@@ -553,8 +559,12 @@ app.patch("/decrease_quantity", async (req, res) => {
             let productItem = cart.products[itemIndex];
             productItem.quantity -= 1;
             cart.products[itemIndex] = productItem;
+            if (productItem.quantity == 0) {
+                cart.products.splice(itemIndex, 1);
+                cart = await cart.save();
+            }
             cart = await cart.save();
-            return res.status(200).send({ status: true, updatedCart: cart });
+            return res.status(200).send({ status: true, updatedCart: {...cart._doc ,total:total} });
         }
         res
             .status(400)
@@ -587,6 +597,7 @@ app.delete('/remove_item', async (req, res) => {
         }
 
         let cart = await cartModel.findOne({ userId: userId });
+        
         if (!cart) {
             return res
                 .status(404)
@@ -597,7 +608,8 @@ app.delete('/remove_item', async (req, res) => {
         if (itemIndex > -1) {
             cart.products.splice(itemIndex, 1);
             cart = await cart.save();
-            return res.status(200).send({ status: true, updatedCart: cart });
+            let total = cart.products.length
+            return res.status(200).send({ status: true, updatedCart: {...cart._doc ,total:total} });
         }
         res
             .status(400)
