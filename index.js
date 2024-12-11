@@ -310,11 +310,9 @@ app.post('/login', async (req, res) => {
             return res.status(401).json({ success: false, message: 'Invalid credentials' });
         }
 
-        // Generate JWT tokens
         const accessToken = jwt.sign({ email, userId: user._id }, 'jwt-access-token-secret-key', { expiresIn: '1d' });
         const refreshToken = jwt.sign({ email, userId: user._id }, 'jwt-refresh-token-secret-key', { expiresIn: '5d' });
 
-        // Set cookies for tokens
         res.cookie('accessToken', accessToken, { maxAge: 86400000, httpOnly: true, secure: true, sameSite: 'strict' });
         res.cookie('refreshToken', refreshToken, { maxAge: 432000000, httpOnly: true, secure: true, sameSite: 'strict' });
 
