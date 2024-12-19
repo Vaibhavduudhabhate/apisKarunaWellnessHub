@@ -25,7 +25,7 @@ app.use(cors(
         origin: "*",
         credentials: true,
         methods: ['POST', 'GET', 'OPTIONS'],
-        allowedHeaders: ['Content-Type','Authorization']
+        allowedHeaders: ['Content-Type', 'Authorization']
     }
 ));
 
@@ -36,235 +36,106 @@ app.use(cors(
 const emailUser = 'dudhabhatevaibhav@gmail.com'
 const emailPass = 'uhmidniafrsfspqj'
 
-// 20/nov
-// app.post('/forgotPassword',async(req,res)=>{
-//     const email = req.body.email;
-//     // console.log(req.body.email ,email)
-//     try {
-//         const olduser = await studentModel.findOne({email});
-//         console.log(olduser)
-//         if(!olduser){
-//             return res.json({status:"user not exists"})
-//         }
-//         const secret = jwt_secret + olduser.password;
-//         const token = jwt.sign({email : olduser.email ,id:olduser._id},secret,{expiresIn : '5m'});
-//         const link = `https://apiskarunawellnesshub.onrender.com/resetPassword/${olduser._id}/${token}`;
-//         console.log('link',link)
-//         var transporter = nodemailer.createTransport({
-//             service: 'gmail',
-//             auth: {
-//               user: 'dudhabhatevaibhav@gmail.com',
-//               pass: 'uhmidniafrsfspqj'
-//             }
-//           });
+app.post("/sendpasswordlink", async (req, res) => {
+    console.log(req.body)
 
-//           var mailOptions = {
-//             from: emailUser,
-//             to:email,
-//             subject: 'Sending Email using Node.js',
-//             // text: `${link}`,
-//             html: `<p>Click this Link  <a href="${link}">here to forgot password </a> to visit the link.</p>`,
-//           };
-
-//           transporter.sendMail(mailOptions, function(error, info){
-//             if (error) {
-//               console.log(error);
-//             } else {
-//               console.log('Email sent: ' + info.response);
-//             }
-//           });
-//         res.send(link)
-//     } catch (error) {
-//         console.log(error)
-//     }
-// })
-
-// 20/nov
-
-// app.get("/resetPassword/:id/:token",async(req,res)=>{
-//     const {id,token} = req.params;
-//     // console.log(req.params);
-//     const olduser = await studentModel.findOne({_id : id});
-//         console.log(olduser)
-//         if(!olduser){
-//             return res.json({status:"user not exists"})
-//         }
-//         const secret = jwt_secret + olduser.password;
-//         try {
-//             const verify = jwt.verify(token,secret)
-//             res.render('index',{email:verify.email,status:'Not verified'})
-//             // res.send("verified")
-//         } catch (error) {
-//             console.log(error)
-//             res.send('not Verified')
-//         }
-// })
-
-
-// app.post("/resetPassword/:id/:token", async (req, res) => {
-//     const { id, token } = req.params;
-//     const { password } = req.body;
-
-//     try {
-//         const oldUser = await studentModel.findOne({ _id: id });
-//         if (!oldUser) {
-//             return res.status(404).json({ status: "user not found" });
-//         }
-//         const secret = jwt_secret + oldUser.password;
-//         jwt.verify(token, secret, async (err, decoded) => {
-//             if (err) {
-//                 return res.status(401).json({ status: "token verification failed" });
-//             }
-
-//             await studentModel.updateOne(
-//                 { _id: id },
-//                 { $set: { password: password } }  
-//             );
-
-//             res.render("index",{ email:verify.email,status:'verified'})
-//         });
-//     } catch (error) {
-//         console.error("Error resetting password:", error);
-//         res.status(500).send("Internal Server Error");
-//     }
-// });
-
-// 20/nov
-app.get("/resetPassword/:id/:token", async (req, res) => {
-    const { id, token } = req.params;
-    const { password, confirmPassword } = req.body;
-
-    if (password !== confirmPassword) {
-        return res.status(400).json({ status: "Passwords do not match" });
-    }
-
-    try {
-        const user = await studentModel.findOne({ _id: id });
-        if (!user) {
-            return res.status(404).json({ status: "User not found" });
-        }
-
-        const secret = jwt_secret + user.password;
-
-        jwt.verify(token, secret, async (err) => {
-            if (err) {
-                return res.status(401).json({ status: "Invalid or expired token" });
-            }
-
-            const hashedPassword = await bcrypt.hash(password, 10);
-            await studentModel.updateOne(
-                { _id: id },
-                { $set: { password: hashedPassword } }
-            );
-
-            res.json({ status: "Password updated successfully" });
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ status: "Internal server error" });
-    }
-});
-
-// 22nov
-
-// 22nov
-
-
-app.post('/forgotPassword', async (req, res) => {
     const { email } = req.body;
-    // console.log(emailUser)
+
+    if (!email) {
+        res.status(401).json({ status: 401, message: "Enter Your Email" })
+    }
+
     try {
-        const user = await studentModel.findOne({ email });
-        if (!user) {
-            return res.status(404).json({ status: "User does not exist" });
-        }
-        console.log(user)
-        const secret = jwt_secret + user.password;
-        const token = jwt.sign({ email: user.email, id: user._id }, secret, { expiresIn: '15m' });
-        // const link = `https://apiskarunawellnesshub.onrender.com/resetPassword/${user._id}/${token}`;
-        const link = `http://localhost:3001/resetPassword/${user._id}/${token}`;
-        console.log("Link", link)
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: emailUser,
-                pass: emailPass,
-            },
+        const userfind = await studentModel.findOne({ email: email });
+        console.log(userfind._id)
+        // token generate for reset password
+        const token = jwt.sign({ _id: userfind._id }, jwt_secret, {
+            expiresIn: "300s"
         });
+        console.log(token)
+        // const setusertoken = await studentModel.findByIdAndUpdate({_id:userfind._id},{verifytoken:token});
 
-        const mailOptions = {
-            from: emailUser,
-            to: email,
-            subject: 'Password Reset Link',
-            html: `<p>Click this <a href="${link}">link</a> to reset your password. This link is valid for 15 minutes.</p>`,
-        };
 
-        await transporter.sendMail(mailOptions);
-        res.json({ status: "Password reset link sent to your email" });
+        if (token) {
+            const transporter = nodemailer.createTransport({
+                service: "gmail",
+                auth: {
+                    user: emailUser,
+                    pass: emailPass,
+                },
+            });
+            const mailOptions = {
+                from: emailUser,
+                to: email,
+                subject: "Sending Email For password Reset",
+                text: `This Link Valid For 2 MINUTES http://localhost:3000/forgotpassword/${userfind._id}/${token}`
+            }
+            console.log(mailOptions)
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    console.log("error", error);
+                    res.status(401).json({ status: 401, message: "email not send" })
+                } else {
+                    console.log("Email sent", info.response);
+                    res.status(201).json({ status: 201, message: "Email sent Succsfully" })
+                }
+            })
+
+        }
+
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ status: "Failed to send reset email" });
+        res.status(400).json({ status: 400, message: "invalid user" })
+    }
+
+});
+app.get("/forgotpassword/:id/:token", async (req, res) => {
+    const { id, token } = req.params;
+
+    try {
+        const validuser = await studentModel.findOne({ _id: id });
+
+        const verifyToken = jwt.verify(token, jwt_secret);
+
+        console.log("verifyToken",verifyToken)
+
+        if (validuser && verifyToken._id) {
+            res.status(201).json({ status: 201, validuser })
+        } else {
+            res.status(401).json({ status: 401, message: "user not exist" })
+        }
+
+    } catch (error) {
+        res.status(400).json({ status: 400, error })
     }
 });
+app.post("/:id/:token", async (req, res) => {
+    const { id, token } = req.params;
 
-// 20/nov 
+    const { password } = req.body;
 
+    try {
+        const validuser = await studentModel.findOne({ _id: id });
 
-//   app.post('/forgot-password', (req, res) => {
-//     const { email } = req.body;
-
-//     // Generate a unique reset token
-//     const resetToken = crypto.randomBytes(20).toString('hex');
-
-//     // Save the token to the user's document in the database
-//     studentModel.findOneAndUpdate(
-//       { email },
-//       { resetToken, resetTokenExpiry: Date.now() + 3600000 }, // Token expires in 1 hour
-//       { new: true }
-//     ).then(user => {
-//       if (!user) {
-//         return res.status(404).json({ message: 'User not found' });
-//       }
-
-//       // Send email with password reset link
-//     //   const resetLink = `http://localhost:3002/reset-password/${resetToken}`;
-//       const resetLink = `https://apiskarunawellnesshub.onrender.com/reset-password/${resetToken}`;
-
-//     //   https://apiskarunawellnesshub.onrender.com
-//       const mailOptions = {
-//         from: 'dudhabhatevaibhav@gmail.com',
-//         to: email,
-//         subject: 'Password Reset Link',
-//         text: `Click on this link to reset your password: ${resetLink}`
-//       };
-
-//       transporter.sendMail(mailOptions, (error, info) => {
-//         if (error) {
-//           console.log(error);
-//           return res.status(500).json({ message: 'Failed to send email' });
-//         }
-//         console.log('Email sent: ' + info.response);
-//         res.json({ message: 'Password reset link sent to your email' });
-//       });
-//     }).catch(err => res.status(500).json(err));
-//   });
+        const verifyToken = jwt.verify(token, jwt_secret);
 
 
-//   app.post('/reset-password/:token', (req, res) => {
-//     const { token } = req.params;
-//     const { newPassword } = req.body;
+        if (validuser && verifyToken._id) {
+            const newpassword = await bcrypt.hash(password, 10);
 
-//     studentModel.findOneAndUpdate(
-//       { resetToken: token, resetTokenExpiry: { $gt: Date.now() } },
-//       { password: newPassword, resetToken: null, resetTokenExpiry: null },
-//       { new: true }
-//     ).then(user => {
-//       if (!user) {
-//         return res.status(400).json({ message: 'Invalid or expired token' });
-//       }
-//       res.json({ message: 'Password reset successfully' });
-//     }).catch(err => res.status(500).json(err));
-//   });
+            const setnewuserpass = await studentModel.findByIdAndUpdate({ _id: id }, { password: newpassword });
+
+            setnewuserpass.save();
+            res.status(201).json({ status: 201, setnewuserpass })
+
+        } else {
+            res.status(401).json({ status: 401, message: "user not valid" })
+        }
+    } catch (error) {
+        res.status(400).json({ status: 400, error })
+    }
+})
+
+
 
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
@@ -458,7 +329,7 @@ app.post('/add_to_cart', async (req, res) => {
             return res.status(200).json({
                 success: true,
                 message: 'Cart updated successfully',
-                updatedCart: { ...cart._doc, products: cartWithProductDetails ,total:total }
+                updatedCart: { ...cart._doc, products: cartWithProductDetails, total: total }
             });
         } else {
             const newCart = await cartModel.create({
@@ -562,7 +433,7 @@ app.patch("/decrease_quantity", async (req, res) => {
                 cart = await cart.save();
             }
             cart = await cart.save();
-            return res.status(200).send({ status: true, updatedCart: {...cart._doc ,total:total} });
+            return res.status(200).send({ status: true, updatedCart: { ...cart._doc, total: total } });
         }
         res
             .status(400)
@@ -595,7 +466,7 @@ app.delete('/remove_item', async (req, res) => {
         }
 
         let cart = await cartModel.findOne({ userId: userId });
-        
+
         if (!cart) {
             return res
                 .status(404)
@@ -607,7 +478,7 @@ app.delete('/remove_item', async (req, res) => {
             cart.products.splice(itemIndex, 1);
             cart = await cart.save();
             let total = cart.products.length
-            return res.status(200).send({ status: true, updatedCart: {...cart._doc ,total:total} });
+            return res.status(200).send({ status: true, updatedCart: { ...cart._doc, total: total } });
         }
         res
             .status(400)
@@ -742,8 +613,8 @@ app.delete('/remove_item', async (req, res) => {
 
 
 async function connectMongoDb(url) {
-        return mongoose.connect(url)
-    }
+    return mongoose.connect(url)
+}
 connectMongoDb('mongodb+srv://admin:admin1234@cluster0.w3huoar.mongodb.net/practiceDatabase').then(() => console.log("mongodb connected"))
 
 export default {
@@ -752,7 +623,7 @@ export default {
 
 
 
-app.listen(3001, () => {
+app.listen(8080, () => {
     console.log("server is running");
 })
 

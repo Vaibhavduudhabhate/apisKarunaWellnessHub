@@ -17,6 +17,9 @@ const userSchema = new mongoose.Schema({
         required : [true,'Please Enter an Password'],
         minLength:[6,'minimum password length should be 6 charecters']
     },
+    varifyToken:{
+        type : String,
+    }
 },{timestamps :true})
 
 const studentModel = mongoose.model('register',userSchema)
