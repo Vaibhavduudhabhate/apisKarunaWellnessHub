@@ -379,15 +379,34 @@ app.get('/get_cart', async (req, res) => {
         }
 
         let cart = await cartModel.findOne({ userId: userId });
-        let total = cart.products.length
-        console.log(total)
+        // let total = cart.products.length
+        // console.log(total)
         if (!cart) {
             return res
                 .status(404)
                 .send({ status: false, message: "Cart not found for this user" });
         }
 
-        res.status(200).send({ status: true, cart: { ...cart._doc, total } });
+        const cartWithProductDetails = await Promise.all(
+            cart.products.map(async (item) => {
+                const productDetails = await productModel.findById(item.productId);
+                if (!productDetails) {
+                    return { ...item._doc, productDetails: null }; // Handle case where product details are not found
+                }
+                return { ...item._doc, productDetails };
+            })
+        );
+
+        const total = cartWithProductDetails.length; // Total items in the cart
+
+        res.status(200).send({
+            status: true,
+            cart: {
+                ...cart._doc,
+                products: cartWithProductDetails,
+                total,
+            },
+        });
     } catch (err) {
         if (err.name === 'JsonWebTokenError') {
             return res.status(401).json({ success: false, message: 'Invalid token' });
