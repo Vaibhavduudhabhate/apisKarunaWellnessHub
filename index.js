@@ -10,7 +10,9 @@ import crypto, { verify } from 'crypto';
 import bcrypt from 'bcrypt';
 import cartModel from "./model/cartModel.js";
 import { isValidObjectId } from "mongoose";
+import dotenv from 'dotenv';
 
+dotenv.config();
 const jwt_secret = 'jsknkjfdkjshdkfjhs'
 // Access-Control-Allow-Origin: *
 // Access-Control-Allow-Methods: POST, GET, OPTIONS
@@ -30,11 +32,11 @@ app.use(cors(
 ));
 
 
-// const emailUser = process.env.EMAIL_USER;
-// const emailPass = process.env.EMAIL_PASS;
+const emailUser = process.env.EMAIL_USER;
+const emailPass = process.env.EMAIL_PASS;
 
-const emailUser = 'dudhabhatevaibhav@gmail.com'
-const emailPass = 'uhmidniafrsfspqj'
+// const emailUser = 'dudhabhatevaibhav@gmail.com'
+// const emailPass = 'uhmidniafrsfspqj'
 
 app.post("/sendpasswordlink", async (req, res) => {
     console.log(req.body)
