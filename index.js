@@ -38,6 +38,7 @@ const emailPass = process.env.EMAIL_PASS;
 // const emailUser = 'dudhabhatevaibhav@gmail.com'
 // const emailPass = 'uhmidniafrsfspqj'
 
+// Forgot Password Logic starts Here
 app.post("/sendpasswordlink", async (req, res) => {
     console.log(req.body)
 
@@ -90,6 +91,7 @@ app.post("/sendpasswordlink", async (req, res) => {
     }
 
 });
+
 app.get("/forgotpassword/:id/:token", async (req, res) => {
     const { id, token } = req.params;
 
@@ -110,6 +112,7 @@ app.get("/forgotpassword/:id/:token", async (req, res) => {
         res.status(400).json({ status: 400, error })
     }
 });
+
 app.post("/:id/:token", async (req, res) => {
     const { id, token } = req.params;
 
@@ -136,9 +139,10 @@ app.post("/:id/:token", async (req, res) => {
         res.status(400).json({ status: 400, error })
     }
 })
+// Forgot Password Logic ends Here
 
 
-
+// Register and login starts Here
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
 
@@ -194,6 +198,7 @@ app.post('/login', async (req, res) => {
         return res.status(500).json({ success: false, message: 'Server error', error: err.message });
     }
 });
+// Register and login ends Here
 
 async function hashExistingPasswords() {
     const users = await studentModel.find({});
@@ -249,7 +254,7 @@ const renewToken = (req, res) => {
 app.get('/dashboard', verifyuser, (req, res) => {
     return res.json({ valid: true, message: "authorized" })
 })
-
+// Products Logic Starts here
 app.get('/allproducts', (req, res) => {
     productModel.find({})
         .then(products => res.json(products))
@@ -257,32 +262,29 @@ app.get('/allproducts', (req, res) => {
 })
 
 app.get('/product/:id', (req, res) => {
-    const productId = req.params.id; // Get the product ID from the URL parameter
-
+    const productId = req.params.id; 
     productModel.findById(productId)
         .then(product => {
             if (product) {
-                res.json(product); // Return the product if found
+                res.json(product); 
             } else {
-                res.status(404).json({ message: "Product not found" }); // Return 404 if not found
+                res.status(404).json({ message: "Product not found" }); 
             }
         })
         .catch(err => res.status(500).json({ error: "Error retrieving product", details: err }));
 });
+// Products Logic ends here
 
 // Add to cart logic start here
-// with token logic
 app.post('/add_to_cart', async (req, res) => {
     try {
-        // Extract the token from the Authorization header
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             return res.status(401).json({ success: false, message: 'Authorization token is required' });
         }
 
-        const token = authHeader.split(' ')[1]; // Get the token part after "Bearer"
+        const token = authHeader.split(' ')[1]; 
 
-        // Verify the token and extract the userId
         const decoded = jwt.verify(token, 'jwt-access-token-secret-key');
         const userId = decoded.userId;
 
@@ -365,7 +367,7 @@ app.get('/get_cart', async (req, res) => {
             return res.status(401).json({ success: false, message: 'Authorization token is required' });
         }
 
-        const token = authHeader.split(' ')[1]; // Get the token part after "Bearer"
+        const token = authHeader.split(' ')[1]; 
 
         // Verify the token and extract the userId
         const decoded = jwt.verify(token, 'jwt-access-token-secret-key');
@@ -379,8 +381,7 @@ app.get('/get_cart', async (req, res) => {
         }
 
         let cart = await cartModel.findOne({ userId: userId });
-        // let total = cart.products.length
-        // console.log(total)
+
         if (!cart) {
             return res
                 .status(404)
@@ -391,13 +392,13 @@ app.get('/get_cart', async (req, res) => {
             cart.products.map(async (item) => {
                 const productDetails = await productModel.findById(item.productId);
                 if (!productDetails) {
-                    return { ...item._doc, productDetails: null }; // Handle case where product details are not found
+                    return { ...item._doc, productDetails: null }; 
                 }
                 return { ...item._doc, productDetails };
             })
         );
 
-        const total = cartWithProductDetails.length; // Total items in the cart
+        const total = cartWithProductDetails.length; 
 
         res.status(200).send({
             status: true,
@@ -511,128 +512,7 @@ app.delete('/remove_item', async (req, res) => {
         return res.status(500).json({ success: false, message: 'Server error', error: err.message });
     }
 })
-// with token logic
-
-// without token logic
-// app.post('/add_to_cart/:userId',async(req,res)=>{
-//     let token = req.body.token
-//     console.log(req.body)
-//     let userId = req.params.userId;
-//   let user = await studentModel.exists({ _id: userId });
-
-//   if (!userId || !isValidObjectId(userId) || !user){
-//       return res.status(400).send({ status: false, message: "Invalid user ID" });
-//   }
-
-//   let productId = req.body.productId;
-//   if (!productId){
-//       return res.status(400).send({ status: false, message: "Invalid product" });
-//   }
-
-//   let cart = await cartModel.findOne({ userId: userId });
-
-//   if (cart) {
-//     let itemIndex = cart.products.findIndex((p) => p.productId == productId);
-
-//     if (itemIndex > -1) {
-//       let productItem = cart.products[itemIndex];
-//       productItem.quantity += 1;
-//       cart.products[itemIndex] = productItem;
-//     } else {
-//       cart.products.push({ productId: productId, quantity: 1 });
-//     }
-//     cart = await cart.save();
-//     return res.status(200).send({ status: true, updatedCart: cart });
-//   } else {
-//     const newCart = await cartModel.create({
-//       userId,
-//       products: [{ productId: productId, quantity: 1 }],
-//     });
-
-//     return res.status(201).send({ status: true, newCart: newCart });
-//   }
-// })
-// app.get('/get_cart/:userId',async(req,res)=>{
-//     let userId = req.params.userId;
-//   let user = await studentModel.exists({ _id: userId });
-
-//   if (!userId || !isValidObjectId(userId) || !user){
-//       return res.status(400).send({ status: false, message: "Invalid user ID" });
-//   }
-
-//   let cart = await cartModel.findOne({ userId: userId });
-//   if (!cart){
-//       return res
-//         .status(404)
-//         .send({ status: false, message: "Cart not found for this user" });
-//   }
-
-//   res.status(200).send({ status: true, cart: cart });
-// })
-// app.patch('/decrease_quantity/:userId', async (req, res) => {
-//     // use add product endpoint for increase quantity
-//     let userId = req.params.userId;
-//     let user = await studentModel.exists({ _id: userId });
-//     let productId = req.body.productId;
-
-//     if (!userId || !isValidObjectId(userId) || !user) {
-//         return res.status(400).send({ status: false, message: "Invalid user ID" });
-//     }
-
-//     let cart = await cartModel.findOne({ userId: userId });
-//     if (!cart) {
-//         return res
-//             .status(404)
-//             .send({ status: false, message: "Cart not found for this user" });
-//     }
-
-//     let itemIndex = cart.products.findIndex((p) => p.productId == productId);
-
-//     if (itemIndex > -1) {
-//         let productItem = cart.products[itemIndex];
-//         productItem.quantity -= 1;
-//         cart.products[itemIndex] = productItem;
-//         cart = await cart.save();
-//         return res.status(200).send({ status: true, updatedCart: cart });
-//     }
-//     res
-//         .status(400)
-//         .send({ status: false, message: "Item does not exist in cart" });
-// })
-// without token logic
-
-
-
-// app.delete('/remove_item/:userId', async (req, res) => {
-//     let userId = req.params.userId;
-//     let user = await studentModel.exists({ _id: userId });
-//     let productId = req.body.productId;
-
-//     if (!userId || !isValidObjectId(userId) || !user) {
-//         return res.status(400).send({ status: false, message: "Invalid user ID" });
-//     }
-
-//     let cart = await cartModel.findOne({ userId: userId });
-//     if (!cart) {
-//         return res
-//             .status(404)
-//             .send({ status: false, message: "Cart not found for this user" });
-//     }
-
-//     let itemIndex = cart.products.findIndex((p) => p.productId == productId);
-//     if (itemIndex > -1) {
-//         cart.products.splice(itemIndex, 1);
-//         cart = await cart.save();
-//         return res.status(200).send({ status: true, updatedCart: cart });
-//     }
-//     res
-//         .status(400)
-//         .send({ status: false, message: "Item does not exist in cart" });
-// })
-
-// Add to cart logic end here
-
-
+// Add to cart logic ends here
 async function connectMongoDb(url) {
     return mongoose.connect(url)
 }
@@ -641,8 +521,6 @@ connectMongoDb('mongodb+srv://admin:admin1234@cluster0.w3huoar.mongodb.net/pract
 export default {
     connectMongoDb,
 }
-
-
 
 app.listen(8080, () => {
     console.log("server is running");
