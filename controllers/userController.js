@@ -1,5 +1,6 @@
 import studentModel from "../model/studentModel.js";
 import bcrypt from 'bcrypt';
+import jwt from "jsonwebtoken";
 
 export const registerController = async (req, res) => {
     const { name, email, password } = req.body;
