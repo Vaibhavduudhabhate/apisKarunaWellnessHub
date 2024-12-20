@@ -2,6 +2,7 @@ import { isValidObjectId } from "mongoose";
 import cartModel from "../model/cartModel.js";
 import productModel from "../model/productModel.js";
 import studentModel from "../model/studentModel.js";
+import crypto, { verify } from 'crypto';
 import jwt from "jsonwebtoken";
 
 export const addToCartController = async(req,res) => {
