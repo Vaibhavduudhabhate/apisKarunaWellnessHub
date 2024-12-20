@@ -1,4 +1,5 @@
 import studentModel from "../model/studentModel.js";
+import bcrypt from 'bcrypt';
 
 export const registerController = async (req, res) => {
     const { name, email, password } = req.body;
