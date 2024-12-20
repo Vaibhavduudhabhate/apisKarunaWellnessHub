@@ -1,13 +1,14 @@
 import studentModel from "../model/studentModel.js";
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
+import jwt from "jsonwebtoken";
 dotenv.config();
 const jwt_secret = 'jsknkjfdkjshdkfjhs'
 const emailUser = process.env.EMAIL_USER;
 const emailPass = process.env.EMAIL_PASS;
 
 export const sendPasswordLinkController = async (req, res) => {
-    console.log(req.body)
+    console.log(req.body ,emailPass ,emailUser)
 
     const { email } = req.body;
 
@@ -17,12 +18,12 @@ export const sendPasswordLinkController = async (req, res) => {
 
     try {
         const userfind = await studentModel.findOne({ email: email });
-        console.log(userfind._id)
+        // console.log("userfind",userfind._id)
         // token generate for reset password
         const token = jwt.sign({ _id: userfind._id }, jwt_secret, {
             expiresIn: "300s"
         });
-        console.log(token)
+        // console.log(token)
         // const setusertoken = await studentModel.findByIdAndUpdate({_id:userfind._id},{verifytoken:token});
 
 

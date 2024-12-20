@@ -55,7 +55,7 @@ export const addToCartController = async(req,res) => {
             );
 
             const total = cartWithProductDetails.length
-            console.log(total)
+            // console.log(total)
 
             return res.status(200).json({
                 success: true,
