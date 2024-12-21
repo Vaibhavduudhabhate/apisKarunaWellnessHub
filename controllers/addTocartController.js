@@ -7,22 +7,7 @@ import jwt from "jsonwebtoken";
 
 export const addToCartController = async(req,res) => {
     try {
-        const authHeader = req.headers.authorization;
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({ success: false, message: 'Authorization token is required' });
-        }
-
-        const token = authHeader.split(' ')[1]; 
-
-        const decoded = jwt.verify(token, 'jwt-access-token-secret-key');
-        const userId = decoded.userId;
-
-        // Validate the user
-        const user = await studentModel.exists({ _id: userId });
-        if (!user) {
-            return res.status(400).json({ success: false, message: 'Invalid user ID' });
-        }
-
+        const userId = req.userId;
         // Validate the product
         const productId = req.body.productId;
         if (!productId) {
@@ -91,23 +76,7 @@ export const addToCartController = async(req,res) => {
 
 export const getCartController = async(req,res) => {
     try {
-        const authHeader = req.headers.authorization;
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({ success: false, message: 'Authorization token is required' });
-        }
-
-        const token = authHeader.split(' ')[1]; 
-
-        // Verify the token and extract the userId
-        const decoded = jwt.verify(token, 'jwt-access-token-secret-key');
-        const userId = decoded.userId;
-
-        // Validate the user
-        const user = await studentModel.exists({ _id: userId });
-
-        if (!userId || !isValidObjectId(userId) || !user) {
-            return res.status(400).send({ status: false, message: "Invalid user ID" });
-        }
+        const userId = req.userId;
 
         let cart = await cartModel.findOne({ userId: userId });
 
@@ -147,23 +116,8 @@ export const getCartController = async(req,res) => {
 
 export const decreaseQuantityController = async(req,res) => {
     try {
-        const authHeader = req.headers.authorization;
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({ success: false, message: 'Authorization token is required' });
-        }
-
-        const token = authHeader.split(' ')[1]; // Get the token part after "Bearer"
-
-        // Verify the token and extract the userId
-        const decoded = jwt.verify(token, 'jwt-access-token-secret-key');
-        const userId = decoded.userId;
-
-        let user = await studentModel.exists({ _id: userId });
+        const userId = req.userId;
         let productId = req.body.productId;
-
-        if (!userId || !isValidObjectId(userId) || !user) {
-            return res.status(400).send({ status: false, message: "Invalid user ID" });
-        }
 
         let cart = await cartModel.findOne({ userId: userId });
         let total = cart.products.length
@@ -199,22 +153,8 @@ export const decreaseQuantityController = async(req,res) => {
 
 export const removeCartItemController = async(req,res) => {
     try {
-        const authHeader = req.headers.authorization;
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({ success: false, message: 'Authorization token is required' });
-        }
-
-        const token = authHeader.split(' ')[1]; // Get the token part after "Bearer"
-
-        // Verify the token and extract the userId
-        const decoded = jwt.verify(token, 'jwt-access-token-secret-key');
-        const userId = decoded.userId;
-        let user = await studentModel.exists({ _id: userId });
+        const userId = req.userId;
         let productId = req.body.productId;
-
-        if (!userId || !isValidObjectId(userId) || !user) {
-            return res.status(400).send({ status: false, message: "Invalid user ID" });
-        }
 
         let cart = await cartModel.findOne({ userId: userId });
 

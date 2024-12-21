@@ -10,6 +10,7 @@ import { addToCartController, decreaseQuantityController, getCartController, rem
 import { dashboardAuthorizationController, loginController, registerController } from "./controllers/userController.js";
 import { getAllProductsController, getSingleProductController } from "./controllers/productsController.js";
 import { resetPasswordController, sendPasswordLinkController, verifyResetPasswordUserController } from "./controllers/forgotPasswordController.js";
+import { authorize } from "./middleware/authorization.js";
 
 // Access-Control-Allow-Origin: *
 // Access-Control-Allow-Methods: POST, GET, OPTIONS
@@ -107,13 +108,13 @@ app.get('/product/:id', getSingleProductController);
 // Products Logic ends here
 
 // Add to cart logic start here
-app.post('/add_to_cart', addToCartController);
+app.post('/add_to_cart',authorize, addToCartController);
 
-app.get('/get_cart',getCartController)
+app.get('/get_cart',authorize,getCartController)
 
-app.patch("/decrease_quantity",decreaseQuantityController)
+app.patch("/decrease_quantity",authorize,decreaseQuantityController)
 
-app.delete('/remove_item',removeCartItemController)
+app.delete('/remove_item',authorize,removeCartItemController)
 // Add to cart logic ends here
 async function connectMongoDb(url) {
     return mongoose.connect(url)

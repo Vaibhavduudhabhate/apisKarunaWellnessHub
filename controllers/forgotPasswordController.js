@@ -2,6 +2,7 @@ import studentModel from "../model/studentModel.js";
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
 import jwt from "jsonwebtoken";
+import bcrypt from 'bcrypt';
 import crypto, { verify } from 'crypto';
 dotenv.config();
 const jwt_secret = 'jsknkjfdkjshdkfjhs'
