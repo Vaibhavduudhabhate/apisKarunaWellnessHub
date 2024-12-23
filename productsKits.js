@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import productModel from "./model/productModel.js";
 import fs from "fs";
 import path from "path";
 import kitModel from "./model/kitModel.js";
@@ -115,9 +114,9 @@ async function addProductKits() {
 
     try {
         await kitModel.insertMany(ProductsKits);
-        console.log("Dummy products added successfully!");
+        console.log("Kits added successfully!");
     } catch (error) {
-        console.error("Error adding dummy products:", error);
+        console.error("Error adding Kits:", error);
     } finally {
         mongoose.disconnect();
     }

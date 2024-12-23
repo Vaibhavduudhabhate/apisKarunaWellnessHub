@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import productModel from "./model/productModel.js";
 import fs from "fs";
 import path from "path";
-// path
 
 async function connectMongoDb(url) {
     return mongoose.connect(url);
@@ -10,7 +9,6 @@ async function connectMongoDb(url) {
 
 async function addDummyProducts() {
     await connectMongoDb('mongodb+srv://admin:admin1234@cluster0.w3huoar.mongodb.net/practiceDatabase');
-    // const assetsPath = \.resolve("assets");
     const assetsPath = path.resolve("assets");
 
     const dummyProducts = [
@@ -473,9 +471,9 @@ async function addDummyProducts() {
 
     try {
         await productModel.insertMany(dummyProducts);
-        console.log("Dummy products added successfully!");
+        console.log("products added successfully!");
     } catch (error) {
-        console.error("Error adding dummy products:", error);
+        console.error("Error adding products:", error);
     } finally {
         mongoose.disconnect();
     }
