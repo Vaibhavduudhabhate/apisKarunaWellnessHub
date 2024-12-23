@@ -19,7 +19,7 @@ async function addProductKits() {
             Kit_name: "WEIGHT GAIN KIT",
             Kit_tagline:"",
             Kit_varient: "",
-            Kit_image: `data:image/jpeg;base64,${fs.readFileSync(path.join(assetsPath, "productkits1.png")).toString("base64")}`,
+            Kit_image: `data:image/png;base64,${fs.readFileSync(path.join(assetsPath, "productkits1.png")).toString("base64")}`,
             Kit_price: "3150 ₹",
             Kit_description: `1 Berry Plus Capsules +/1 All In One Capsules +/1 Health Force Capsules`
         },
@@ -27,7 +27,7 @@ async function addProductKits() {
             Kit_name: "FEMALE HYGINE KIT",
             Kit_tagline:"",
             Kit_varient: "",
-            Kit_image: `data:image/jpeg;base64,${fs.readFileSync(path.join(assetsPath, "productkits1.png")).toString("base64")}`,
+            Kit_image: `data:image/png;base64,${fs.readFileSync(path.join(assetsPath, "productkits1.png")).toString("base64")}`,
             Kit_price: "3150 ₹",
             Kit_description: `2 Pro Care +/4 Pro Wings +/4 Pro Liner`
         },
@@ -35,7 +35,7 @@ async function addProductKits() {
             Kit_name: "FEMALE PCOD KIT",
             Kit_tagline:"",
             Kit_varient: "",
-            Kit_image: `data:image/jpeg;base64,${fs.readFileSync(path.join(assetsPath, "productkits1.png")).toString("base64")}`,
+            Kit_image: `data:image/png;base64,${fs.readFileSync(path.join(assetsPath, "productkits1.png")).toString("base64")}`,
             Kit_price: "3150 ₹",
             Kit_description: `2 Female Choice +/2 Pro Wings +/3 Pro Liner`
         },
@@ -43,7 +43,7 @@ async function addProductKits() {
             Kit_name: "WEIGHT LOSS KIT",
             Kit_tagline:"",
             Kit_varient: "",
-            Kit_image: `data:image/jpeg;base64,${fs.readFileSync(path.join(assetsPath, "productkits1.png")).toString("base64")}`,
+            Kit_image: `data:image/png;base64,${fs.readFileSync(path.join(assetsPath, "productkits1.png")).toString("base64")}`,
             Kit_price: "3150 ₹",
             Kit_description: `1 All In One Capsules +/3 Nano Cellulite Gel +/1 Xerofit Capsules`
         },
@@ -51,7 +51,7 @@ async function addProductKits() {
             Kit_name: "PILES CARE KIT",
             Kit_tagline:"",
             Kit_varient: "",
-            Kit_image: `data:image/jpeg;base64,${fs.readFileSync(path.join(assetsPath, "productkits1.png")).toString("base64")}`,
+            Kit_image: `data:image/png;base64,${fs.readFileSync(path.join(assetsPath, "productkits1.png")).toString("base64")}`,
             Kit_price: "3150 ₹",
             Kit_description: `1 All In One Capsules +/2 Pilo Heal Capsules`
         },
@@ -59,7 +59,7 @@ async function addProductKits() {
             Kit_name: "BODY PAIN RELIFE",
             Kit_tagline:"",
             Kit_varient: "",
-            Kit_image: `data:image/jpeg;base64,${fs.readFileSync(path.join(assetsPath, "productkits1.png")).toString("base64")}`,
+            Kit_image: `data:image/png;base64,${fs.readFileSync(path.join(assetsPath, "productkits1.png")).toString("base64")}`,
             Kit_price: "3150 ₹",
             Kit_description: `1 All In One Capsules +/1 All Total Oil +/1 All Total Capsules`
         },
@@ -67,7 +67,7 @@ async function addProductKits() {
             Kit_name: "HEART CARE KIT",
             Kit_tagline:"",
             Kit_varient: "",
-            Kit_image: `data:image/jpeg;base64,${fs.readFileSync(path.join(assetsPath, "productkits1.png")).toString("base64")}`,
+            Kit_image: `data:image/png;base64,${fs.readFileSync(path.join(assetsPath, "productkits1.png")).toString("base64")}`,
             Kit_price: "3150 ₹",
             Kit_description: `1 All In One Capsules +/2 Cardiocare Capsules`
         },
@@ -75,7 +75,7 @@ async function addProductKits() {
             Kit_name: "GOOD NEWS KIT",
             Kit_tagline:"",
             Kit_varient: "",
-            Kit_image: `data:image/jpeg;base64,${fs.readFileSync(path.join(assetsPath, "productkits1.png")).toString("base64")}`,
+            Kit_image: `data:image/png;base64,${fs.readFileSync(path.join(assetsPath, "productkits1.png")).toString("base64")}`,
             Kit_price: "3150 ₹",
             Kit_description: `1 Female Choice Capsules +/1 Men's Solution Capsules +/2 Pro Wings + 3 Pro Liner`
         },
@@ -83,7 +83,7 @@ async function addProductKits() {
             Kit_name: "FAMILY HAPPINESS KIT",
             Kit_tagline:"",
             Kit_varient: "",
-            Kit_image: `data:image/jpeg;base64,${fs.readFileSync(path.join(assetsPath, "productkits1.png")).toString("base64")}`,
+            Kit_image: `data:image/png;base64,${fs.readFileSync(path.join(assetsPath, "productkits1.png")).toString("base64")}`,
             Kit_price: "3150 ₹",
             Kit_description: "1 Female Choice Capsules +/1 Men's Solution Capsules +/1 All In One Capsules"
         },
@@ -91,7 +91,7 @@ async function addProductKits() {
             Kit_name: "KIDENY STONE CARE KIT",
             Kit_tagline:"",
             Kit_varient: "",
-            Kit_image: `data:image/jpeg;base64,${fs.readFileSync(path.join(assetsPath, "productkits1.png")).toString("base64")}`,
+            Kit_image: `data:image/png;base64,${fs.readFileSync(path.join(assetsPath, "productkits1.png")).toString("base64")}`,
             Kit_price: "3150 ₹",
             Kit_description: "2 Calycure Capsules +/1 All In One Capsules"
         },
@@ -99,7 +99,7 @@ async function addProductKits() {
             Kit_name: "BEAUTY & SKIN KIT",
             Kit_tagline:"",
             Kit_varient: "",
-            Kit_image: `data:image/jpeg;base64,${fs.readFileSync(path.join(assetsPath, "productkits1.png")).toString("base64")}`,
+            Kit_image: `data:image/png;base64,${fs.readFileSync(path.join(assetsPath, "productkits1.png")).toString("base64")}`,
             Kit_price: "3150 ₹",
             Kit_description: "7 Alovera Gel +/1 Berry Plus Capsules + 1 All In One Capsules"
         },
@@ -107,7 +107,7 @@ async function addProductKits() {
             Kit_name: "LIVER CARE KIT",
             Kit_tagline:"",
             Kit_varient: "",
-            Kit_image: `data:image/jpeg;base64,${fs.readFileSync(path.join(assetsPath, "productkits1.png")).toString("base64")}`,
+            Kit_image: `data:image/png;base64,${fs.readFileSync(path.join(assetsPath, "productkits1.png")).toString("base64")}`,
             Kit_price: "3150 ₹",
             Kit_description: "2 Livercare Capsules +/1 All In One Capsules"
         }
