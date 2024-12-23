@@ -11,6 +11,7 @@ import { dashboardAuthorizationController, loginController, registerController }
 import { getAllProductsController, getSingleProductController } from "./controllers/productsController.js";
 import { resetPasswordController, sendPasswordLinkController, verifyResetPasswordUserController } from "./controllers/forgotPasswordController.js";
 import { authorize } from "./middleware/authorization.js";
+import { getAllkitsController, getSinglekitController } from "./controllers/kitController.js";
 
 // Access-Control-Allow-Origin: *
 // Access-Control-Allow-Methods: POST, GET, OPTIONS
@@ -106,6 +107,12 @@ app.get('/allproducts', getAllProductsController)
 
 app.get('/product/:id', getSingleProductController);
 // Products Logic ends here
+
+// kits logic starts here
+app.get('/allkits', getAllkitsController)
+
+app.get('/kit/:id', getSinglekitController);
+// kits logic ends here
 
 // Add to cart logic start here
 app.post('/add_to_cart',authorize, addToCartController);

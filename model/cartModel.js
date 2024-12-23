@@ -3,7 +3,18 @@ import mongoose from "mongoose";
 const itemSchema = mongoose.Schema({
     productId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Product",
+      ref: "karunaProduct",
+    },
+    quantity: {
+      type: Number,
+      default: 0,
+    },
+  });
+
+  const kitSchema = mongoose.Schema({
+    kitId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "karunaKits",
     },
     quantity: {
       type: Number,
@@ -13,6 +24,7 @@ const itemSchema = mongoose.Schema({
 
 const cartSchema = new mongoose.Schema({
     products: [itemSchema],
+    kits:[kitSchema],
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "register",
